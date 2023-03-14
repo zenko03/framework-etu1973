@@ -18,7 +18,18 @@ import javax.servlet.http.HttpServletResponse;
  * @author aris
  */
 public class FrontServlet extends HttpServlet {
+<<<<<<< Updated upstream
   
+=======
+    Map<String, Mapping> mappingUrls = new HashMap<>();
+
+    @Override
+    public void init() throws ServletException {
+        // Initializing all of the class routes
+        mappingUrls = MappingInitializer.getAllControllerURLMethods();
+    }
+    
+>>>>>>> Stashed changes
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String currentURL = request.getRequestURI().replace(request.getContextPath(), "") + "?" + request.getQueryString();    
