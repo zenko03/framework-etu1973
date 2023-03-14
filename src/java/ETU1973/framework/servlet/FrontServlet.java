@@ -2,8 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package ETU1973.framework.servlet;
+package etu2083.framework.servlet;
 
+import etu2083.framework.Mapping;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -18,18 +19,14 @@ import javax.servlet.http.HttpServletResponse;
  * @author aris
  */
 public class FrontServlet extends HttpServlet {
-<<<<<<< Updated upstream
-  
-=======
     Map<String, Mapping> mappingUrls = new HashMap<>();
 
     @Override
     public void init() throws ServletException {
         // Initializing all of the class routes
-        mappingUrls = MappingInitializer.getAllControllerURLMethods();
+        mappingUrls = Initmapping.getAllControllerURLMethods();
     }
     
->>>>>>> Stashed changes
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String currentURL = request.getRequestURI().replace(request.getContextPath(), "") + "?" + request.getQueryString();    
