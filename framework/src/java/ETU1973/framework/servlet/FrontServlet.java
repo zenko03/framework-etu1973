@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
-package etu2083.framework.servlet;
+package ETU1973.framework.servlet;
 
-import etu2083.framework.Mapping;
+import ETU1973.framework.Mapping;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
