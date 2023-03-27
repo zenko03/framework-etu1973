@@ -5,13 +5,16 @@
 package ETU1973.framework.app.controllers;
 
 
+import ETU1973.framework.Modelview;
 import ETU1973.framework.servlet.annotations.Route;
 import ETU1973.framework.servlet.annotations.Controller;
 
 @Controller
 public class TestController{
     @Route(url="/test/index")
-    public void index() {
-        
+    public Modelview index() {
+        Modelview modelview = new Modelview();
+        modelview.setView("coucou");
+        return modelview;
     }
 }
