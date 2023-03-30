@@ -14,7 +14,7 @@ public class TestController{
     @Route(url="/test/index")
     public Modelview index() {
         Modelview modelview = new Modelview();
-        modelview.setView("coucou");
+        modelview.setView("index.jsp");
         return modelview;
     }
 }
