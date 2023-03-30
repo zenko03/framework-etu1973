@@ -39,33 +39,33 @@ public class FrontServlet extends HttpServlet {
          response.getWriter().print(currentURL);
          
         
-        if(mappingUrls.containsKey(currentURL)){
-            Mapping mapping =  mappingUrls.get(currentURL);
-            mapping.getClassName();
-            System.out.print("zavatra"+mappingUrls.size());
-            
-            try {
-                Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
-                
-               Modelview modelview = (Modelview) object.getClass().getMethod(mapping.getMethod()).invoke(object);
-                RequestDispatcher dispat = request.getRequestDispatcher(modelview.getView());
-            dispat.forward(request,response);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchMethodException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InvocationTargetException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+       if(mappingUrls.containsKey(currentURL)){
+           Mapping mapping =  mappingUrls.get(currentURL);
+           mapping.getClassName();
+           System.out.print("zavatra"+mappingUrls.size());
+           
+           try {
+               Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
+               
+              Modelview modelview = (Modelview) object.getClass().getMethod(mapping.getMethod()).invoke(object);
+               RequestDispatcher dispat = request.getRequestDispatcher(modelview.getView());
+           dispat.forward(request,response);
+           } catch (ClassNotFoundException ex) {
+               Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+           } catch (InstantiationException ex) {
+               Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+           } catch (IllegalAccessException ex) {
+               Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+           } catch (NoSuchMethodException ex) {
+               Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+           } catch (SecurityException ex) {
+               Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+           } catch (IllegalArgumentException ex) {
+               Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+           } catch (InvocationTargetException ex) {
+               Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+           }
+       }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
