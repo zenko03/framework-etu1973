@@ -1,5 +1,5 @@
 
-import ETU1973.framework.Mapping;
+import ETU1973.framework.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,7 +13,7 @@ import ETU1973.framework.Mapping;
  */
 public class Main {
     public static void main(String[] args) {
-        Mapping mapping = new Mapping();
+       
         System.out.println("hello");
     }   
 }

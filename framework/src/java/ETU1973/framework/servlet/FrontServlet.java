@@ -47,9 +47,10 @@ public class FrontServlet extends HttpServlet {
            try {
                Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
                
+               response.getWriter().print("fdgfsdbg");
               Modelview modelview = (Modelview) object.getClass().getMethod(mapping.getMethod()).invoke(object);
                RequestDispatcher dispat = request.getRequestDispatcher(modelview.getView());
-           dispat.forward(request,response);
+                dispat.forward(request,response);
            } catch (ClassNotFoundException ex) {
                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
            } catch (InstantiationException ex) {

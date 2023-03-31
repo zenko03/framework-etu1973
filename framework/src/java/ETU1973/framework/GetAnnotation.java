@@ -19,10 +19,13 @@ import java.util.List;
  */
 public class GetAnnotation {
     public static List<Class<?>> getClassesWithAnnotation(Class<? extends Annotation> annotation) {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("controller");
+        
         List<Class<?>> classes = new ArrayList<>();
         try {
-            for (Package pack : Package.getPackages()) {
-                for (Class<?> cls : getClassesInPackage(pack.getName())) {
+            for (String pack : list) {
+                for (Class<?> cls : getClassesInPackage(pack)) {
                     if (cls.isAnnotationPresent(annotation)) {
                         classes.add(cls);
                     }
