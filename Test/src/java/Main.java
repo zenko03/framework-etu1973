@@ -1,5 +1,5 @@
 
-import ETU1973.framework.*;
+
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -13,7 +13,6 @@ import ETU1973.framework.*;
  */
 public class Main {
     public static void main(String[] args) {
-       
         System.out.println("hello");
     }   
 }

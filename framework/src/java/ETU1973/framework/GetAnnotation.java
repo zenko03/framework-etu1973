@@ -41,6 +41,13 @@ public class GetAnnotation {
         List<Class<?>> classes = new ArrayList<>();
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         String path = packageName.replace('.', '/');
+//        URL packageUrl = classLoader.getResource(path);
+//        File a = new File(packageUrl.toURI());
+//        File[] i = a.listFiles(file->file.getName().endsWith(".class"));
+//        for( File f : i ){
+//               String c = packageName+"."+f.getName().substring(0,f.getName().lastIndexOf("."));
+//               classes.add( Class.forName(c) );
+//        }
         Enumeration<URL> resources = classLoader.getResources(path);
         while (resources.hasMoreElements()) {
             URL resource = resources.nextElement();

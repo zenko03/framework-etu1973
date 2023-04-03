@@ -37,13 +37,10 @@ public class FrontServlet extends HttpServlet {
         //response.getWriter().print(currentURL);
          response.getWriter().print(mappingUrls);
          response.getWriter().print(currentURL);
-         
-        
        if(mappingUrls.containsKey(currentURL)){
            Mapping mapping =  mappingUrls.get(currentURL);
            mapping.getClassName();
            System.out.print("zavatra"+mappingUrls.size());
-           
            try {
                Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
                
