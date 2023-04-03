@@ -37,19 +37,17 @@ public class FrontServlet extends HttpServlet {
         //response.getWriter().print(currentURL);
          response.getWriter().print(mappingUrls);
          response.getWriter().print(currentURL);
-         
-        
        if(mappingUrls.containsKey(currentURL)){
            Mapping mapping =  mappingUrls.get(currentURL);
            mapping.getClassName();
            System.out.print("zavatra"+mappingUrls.size());
-           
            try {
                Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
                
+               response.getWriter().print("fdgfsdbg");
               Modelview modelview = (Modelview) object.getClass().getMethod(mapping.getMethod()).invoke(object);
                RequestDispatcher dispat = request.getRequestDispatcher(modelview.getView());
-           dispat.forward(request,response);
+                dispat.forward(request,response);
            } catch (ClassNotFoundException ex) {
                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
            } catch (InstantiationException ex) {
