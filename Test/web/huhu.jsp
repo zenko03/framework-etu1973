@@ -13,7 +13,11 @@
         <title>JSP Page</title>
     </head>
     <body>
+        <% for(int i=0; i<f.size();i++ ) {
+        out.print(f.get(i));
+        %>
         
+        <% } %>
         <h1>Hello World!</h1>
     </body>
 </html>

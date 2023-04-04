@@ -13,8 +13,9 @@ public class TestController{
     @Route( url = "/test" )
     public Modelview index() {
         Modelview modelview = new Modelview();
-        Vector<String> test = new Vector<String>();        
-        modelview.addItem("test",test  );
+        Vector<String> test = new Vector<String>(); 
+        test.add("coucou");
+        modelview.addItem("test",test);
         modelview.setView("huhu.jsp");
         return modelview;
     }
