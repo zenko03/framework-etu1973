@@ -8,7 +8,10 @@ import ETU1973.framework.Mapping;
 import ETU1973.framework.Modelview;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -38,21 +41,56 @@ public class FrontServlet extends HttpServlet {
          response.getWriter().print(mappingUrls);
          response.getWriter().print(currentURL);
        if(mappingUrls.containsKey(currentURL)){
+           
            Mapping mapping =  mappingUrls.get(currentURL);
            mapping.getClassName();
            System.out.print("zavatra"+mappingUrls.size());
+         
            try {
+               
                Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
                
-               response.getWriter().print("fdgfsdbg");
-              Modelview modelview = (Modelview) object.getClass().getMethod(mapping.getMethod()).invoke(object);
-                response.getWriter().print(modelview.getData());
+              // response.getWriter().print("fdgfsdbg");
+             
+              
+                  //recupere les attributs de la classe
+                        Field[] field = object.getClass().getDeclaredFields();
 
+                        //les transformer en tableau de string pour la comparaison
+                        String[] attributs = new String[field.length];
+                        for(int j=0;j<field.length;j++)
+                        {
+                            attributs[j] = field[j].getName();
+                        }
+
+                        // Parcourir tous les paramètres et les valeurs du formulaire
+                        Enumeration<String> paramNames = request.getParameterNames();
+                        while (paramNames.hasMoreElements()) {
+                            String paramName = paramNames.nextElement();
+
+                            //Verifier si le parametre fait partie des attributs de la classe 
+                            for(int j=0;j<attributs.length;j++)
+                            {
+                                 response.getWriter().print(currentURL);
+                                if(attributs[j].equals(paramName))
+                                {
+                                    String[] paramValues = request.getParameterValues(paramName);
+                                    Method method= object.getClass().getMethod("set"+attributs[j], field[j].getType());
+                                    Object paramValue = convertParamValue(paramValues[0], field[j].getType());
+                                    method.invoke(object,paramValue);
+                                }
+                                
+                            }
+                        }
+                         Modelview modelview = (Modelview) object.getClass().getMethod(mapping.getMethod()).invoke(object);
+                response.getWriter().print(modelview.getData());
               if(modelview.getData() != null){
+                 
                   for(Map.Entry<String,Object> map : modelview.getData().entrySet()){
                       request.setAttribute(map.getKey(), map.getValue());
                   }
               } 
+             
               RequestDispatcher dispat = request.getRequestDispatcher(modelview.getView());
                 dispat.forward(request,response);
            } catch (ClassNotFoundException ex) {
@@ -72,6 +110,18 @@ public class FrontServlet extends HttpServlet {
            }
        }
     }
+    private Object convertParamValue(String paramValue, Class<?> paramType) {
+    if (paramType == String.class) {
+        return paramValue;
+    } else if (paramType == int.class || paramType == Integer.class) {
+        return Integer.parseInt(paramValue);
+    } else if (paramType == boolean.class || paramType == Boolean.class) {
+        return Boolean.parseBoolean(paramValue);
+    }else if (paramType == double.class || paramType == Double.class) {
+        return Double.parseDouble(paramValue);
+    }
+    return null; 
+}
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
