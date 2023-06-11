@@ -11,10 +11,19 @@ import java.util.Vector;
 
 @Controller
 public class TestController{
+    private int id;
     private String nom;
     private String prenom;
     private int age;
     private double mesure;
+
+    public int getid() {
+        return id;
+    }
+
+    public void setid(int id) {
+        this.id = id;
+    }
     
       public String getnom()
     {
@@ -49,16 +58,33 @@ public class TestController{
         this.mesure=mesure;
     }
 
-    public TestController(String nom, String prenom, int age, double mesure) {
+    public TestController(int id,String nom, String prenom, int age, double mesure) {
         this.nom = nom;
         this.prenom = prenom;
         this.age = age;
         this.mesure = mesure;
+        this.id = id;
     }
     public TestController(){
     }
 
-    
+      @Route(url="TestController/nomcomplet")
+    public Modelview get_nomcomplet()
+    {
+        Modelview m=new Modelview();
+        m.setView("View.jsp");
+        ArrayList<TestController> olona=new ArrayList<TestController>();
+        TestController jean=new TestController(1,"Rakoto","Jean",16,1.60);
+        TestController robert=new TestController(2,"Randria","Robert",18,1.66);
+        TestController jeanne=new TestController(3,"Andria","Jeanne",20,1.76);
+        TestController marie=new TestController(4,"Rasoa","Marie",30,1.80);
+        olona.add(jean);
+        olona.add(robert);
+        olona.add(jeanne);
+        olona.add(marie);
+        m.addItem("Liste_personne",olona);
+        return m;
+    }
     @Route( url = "/test" )
     public Modelview index() {
         Modelview modelview = new Modelview();
@@ -82,8 +108,27 @@ public class TestController{
         Modelview mv=new Modelview();
         mv.setView("Valider.jsp");
         ArrayList<TestController> olona=new ArrayList<TestController>();
-        TestController user=new TestController(this.getnom(),this.getprenom(),this.getage(),this.getmesure());
+        TestController user=new TestController(this.getid(),this.getnom(),this.getprenom(),this.getage(),this.getmesure());
         olona.add(user);
+        mv.addItem("Liste_personne",olona);
+        return mv;
+    }
+        @Route(url="Personne/detail")
+    public Modelview voir_detail(int id)
+    {
+        Modelview mv=new Modelview();
+        mv.setView("Details.jsp");
+        ArrayList<TestController> olona=new ArrayList<TestController>();
+        TestController[] pers=new TestController[4];
+        TestController jean=new TestController(1,"Rakoto","Jean",16,1.60);
+        pers[0]=jean;
+        TestController robert=new TestController(2,"Randria","Robert",18,1.66);
+        pers[1]=robert;
+        TestController jeanne=new TestController(3,"Andria","Jeanne",20,1.76);
+        pers[2]=jeanne;
+        TestController marie=new TestController(4,"Rasoa","Marie",30,1.80);
+        pers[3]=marie;
+        olona.add(pers[id-1]);
         mv.addItem("Liste_personne",olona);
         return mv;
     }
