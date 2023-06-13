@@ -18,11 +18,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.util.Collections;
 
 public class FrontServlet extends HttpServlet {
 
@@ -36,16 +37,17 @@ public class FrontServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String currentURL = request.getRequestURI().replace(request.getContextPath(), "");
-        //response.getWriter().print(currentURL);
-        response.getWriter().print(mappingUrls);
-        response.getWriter().print(currentURL);
+        //out.print(currentURL);
+        PrintWriter out = response.getWriter();
+        out.print(mappingUrls);
+        out.print(currentURL);
         if (mappingUrls.containsKey(currentURL)) {
             Mapping mapping = mappingUrls.get(currentURL);
             mapping.getClassName();
             System.out.print("zavatra" + mappingUrls.size());
             try {
                 Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
-              // response.getWriter().print("fdgfsdbg");
+              // out.print("fdgfsdbg");
                  Method[] methods = object.getClass().getDeclaredMethods();
                         Method fonction = null;
                         
@@ -57,7 +59,7 @@ public class FrontServlet extends HttpServlet {
                         }
                 //recupere les attributs de la classe
                 Field[] field = object.getClass().getDeclaredFields();
-                                        Parameter[] param=fonction.getParameters();
+                Parameter[] param=fonction.getParameters();
                                         
                 //les transformer en tableau de string pour la comparaison
                 String[] attributs = new String[field.length];
@@ -66,31 +68,53 @@ public class FrontServlet extends HttpServlet {
                 }
                 // Parcourir tous les paramètres et les valeurs du formulaire
                 ArrayList<Object> parameter=new ArrayList<>();
-                Enumeration<String> paramNames = request.getParameterNames();
-                while (paramNames.hasMoreElements()) {
-                    String paramName = paramNames.nextElement();
+                Enumeration<String> paramN = request.getParameterNames();
+                ArrayList<String> paramNames = Collections.list(paramN);
+                out.println(paramNames);
+//                for (int i = 0 ; i < paramNames.size() ; i++) {
+//                    String paramName = paramNames.get(i);
                   //Verifier si le parametre fait partie des attributs de la classe 
                     for (int j = 0; j < attributs.length; j++) {
-                        response.getWriter().print(currentURL);
-                        if (attributs[j].equals(paramName)) {
+                        
+                        out.print(currentURL);
+                         for (int i = 0 ; i < paramNames.size() ; i++) {
+                             String paramName = paramNames.get(i);
+                             out.println(paramNames);
+                              if (attributs[j].equals(paramName)) {
                             String[] paramValues = request.getParameterValues(paramName);
                             Method method = object.getClass().getMethod("set" + attributs[j], field[j].getType());
                             Object paramValue = convertParamValue(paramValues[0], field[j].getType());
                             method.invoke(object, paramValue);
                         }
+                         }
+//                        if (attributs[j].equals(paramName)) {
+//                            String[] paramValues = request.getParameterValues(paramName);
+//                            Method method = object.getClass().getMethod("set" + attributs[j], field[j].getType());
+//                            Object paramValue = convertParamValue(paramValues[0], field[j].getType());
+//                            method.invoke(object, paramValue);
+//                        }
                     }
-                     for(int l=0;l<param.length;l++)
-                            {
-                                if(param[l].getName().equals(paramName))
+                     for(int l=0;l<param.length;l++){
+                                out.println(param[l].getName());
+                                for (int i = 0 ; i < paramNames.size() ; i++) {
+                                    String paramName = paramNames.get(i);
+                                    if(param[l].getName().trim().equals(paramName.trim()))
                                 {
-                                    String[] paramValues = request.getParameterValues(paramName);
-                                    Object paramValue = convertParamValue(paramValues[0], param[l].getType());
+                                    String paramValues = request.getParameter(paramName.trim());
+                                    Object paramValue = convertParamValue(paramValues, param[l].getType());
                                     parameter.add(paramValue);
                                 }
+                                }
+//                                if(param[l].getName().trim().equals(paramName.trim()))
+//                                {
+//                                    String paramValues = request.getParameter(paramName.trim());
+//                                    Object paramValue = convertParamValue(paramValues, param[l].getType());
+//                                    parameter.add(paramValue);
+//                                }
                             }
-                }
-                Modelview modelview = (Modelview) object.getClass().getMethod(mapping.getMethod()).invoke(object);
-                response.getWriter().print(modelview.getData());
+//                }
+                Modelview modelview = (Modelview) fonction.invoke(object , parameter.toArray(new Object[parameter.size()]));
+                out.print(modelview.getData());
                 if (modelview.getData() != null) {
                     for (Map.Entry<String, Object> map : modelview.getData().entrySet()) {
                         request.setAttribute(map.getKey(), map.getValue());
@@ -98,20 +122,8 @@ public class FrontServlet extends HttpServlet {
                 }                
                 RequestDispatcher dispat = request.getRequestDispatcher(modelview.getView());
                 dispat.forward(request, response);
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InstantiationException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalAccessException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (NoSuchMethodException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (SecurityException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IllegalArgumentException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (InvocationTargetException ex) {
-                Logger.getLogger(FrontServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch( Exception e ){
+                e.printStackTrace(out);
             }
         }
     }    

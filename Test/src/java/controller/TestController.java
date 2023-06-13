@@ -68,7 +68,7 @@ public class TestController{
     public TestController(){
     }
 
-      @Route(url="TestController/nomcomplet")
+      @Route(url="/nomcomplet")
     public Modelview get_nomcomplet()
     {
         Modelview m=new Modelview();
@@ -113,7 +113,7 @@ public class TestController{
         mv.addItem("Liste_personne",olona);
         return mv;
     }
-        @Route(url="Personne/detail")
+        @Route(url="/detail")
     public Modelview voir_detail(int id)
     {
         Modelview mv=new Modelview();
