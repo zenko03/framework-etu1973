@@ -36,6 +36,7 @@ public class Initmapping {
             // Getting all the methods for each controller
             Method[] controllerMethods = controller.getMethods();
             
+            
             for (Method method : controllerMethods) {
                 // Creating and putting a Mapping and key in the urlMapping has map
                 if (method.isAnnotationPresent(Route.class)) {
@@ -54,5 +55,33 @@ public class Initmapping {
         }
         
         return urlMapping;
+    }
+    
+     public static HashMap<String, Object> GetAllSingleton() {
+        List<Class<?>> controllers = GetAnnotation.getClassesWithAnnotation(Scope.class);
+        
+        // Creating Hash Map containing the url to the controller method and the mapping class
+        HashMap<String, Object> urlMapping = new HashMap<>();
+        
+        // Looping through all the classes annotated with the annotation controller
+        for (Class<?> controller : controllers) {
+            // Getting all the methods for each controller
+            
+            checkSingleton(controller,urlMapping);
+            
+           
+        }
+        
+        return urlMapping;
+    }
+     private static void checkSingleton(Class check, HashMap hashmap) {
+        if(check.isAnnotationPresent(Scope.class)){
+            Scope scop = (Scope) check.getAnnotation(Scope.class); 
+            //if(scop.singleton()){
+                String className = check.getName();
+                hashmap.put(className, null);
+            //}
+            
+        }
     }
 }
