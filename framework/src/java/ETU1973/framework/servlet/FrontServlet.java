@@ -4,8 +4,11 @@
  */
 package ETU1973.framework.servlet;
 
+import ETU1973.framework.FileUpload;
 import ETU1973.framework.Mapping;
 import ETU1973.framework.Modelview;
+import ETU1973.framework.servlet.annotations.Scope;
+import com.sun.jdi.InvocationException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.Field;
@@ -20,19 +23,46 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.Collection;
 import java.util.Collections;
-
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+@MultipartConfig
 public class FrontServlet extends HttpServlet {
 
     Map<String, Mapping> mappingUrls = new HashMap<>();
+    HashMap<String, Object> hashmap = new HashMap<>();
 
+    public Map<String, Mapping> getMappingUrls() {
+        return mappingUrls;
+    }
+
+    public void setMappingUrls(Map<String, Mapping> mappingUrls) {
+        this.mappingUrls = mappingUrls;
+    }
+
+    public HashMap<String, Object> getHashmap() {
+        return hashmap;
+    }
+
+    public void setHashmap(HashMap<String, Object> hashmap) {
+        this.hashmap = hashmap;
+    }
+    
+    
     @Override
     public void init() throws ServletException {
         // Initializing all of the class routes
         mappingUrls = Initmapping.getAllControllerURLMethods();
+        hashmap = Initmapping.GetAllSingleton();
+        
     }
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -46,7 +76,9 @@ public class FrontServlet extends HttpServlet {
             mapping.getClassName();
             System.out.print("zavatra" + mappingUrls.size());
             try {
-                Object object = Class.forName(mapping.getClassName()).getConstructor().newInstance();
+                Class classy= Class.forName(mapping.getClassName());
+                Object objct = Class.forName(mapping.getClassName()).getConstructor().newInstance();
+                Object object = this.GetInClassInstance(classy.getName(), classy);
               // out.print("fdgfsdbg");
                  Method[] methods = object.getClass().getDeclaredMethods();
                         Method fonction = null;
@@ -113,6 +145,19 @@ public class FrontServlet extends HttpServlet {
 //                                }
                             }
 //                }
+
+                try {
+                    Collection<Part> files = request.getParts();
+                    for(Field fld : field){
+                        if(fld.getType()== ETU1973.framework.FileUpload.class){
+                            Method meth = object.getClass().getMethod("set" + fld, fld.getType());
+                            Object obj = this.fileTraitement(files, fld);
+                            meth.invoke(object,obj);
+                        }
+                    }
+                } catch (ServletException | IOException e) {
+                }
+                    
                 Modelview modelview = (Modelview) fonction.invoke(object , parameter.toArray(new Object[parameter.size()]));
                 out.print(modelview.getData());
                 if (modelview.getData() != null) {
@@ -126,7 +171,98 @@ public class FrontServlet extends HttpServlet {
                 e.printStackTrace(out);
             }
         }
-    }    
+    } 
+  
+    public void Reset(Object objet)throws IllegalAccessException, InvocationException, InvocationTargetException{
+        Field[] fields = objet.getClass().getDeclaredFields();
+        for(Field field : fields) {
+            String fieldName = upperFirst(field.getName());
+            Method methodSet = null;
+            try {
+                methodSet =objet.getClass().getMethod("set"+fieldName, field.getType());
+            } catch (Exception e) {
+                continue;
+            }
+            if(field.getType().equals(int.class)){
+                methodSet.invoke(objet, 0);
+            }
+             if(field.getType().equals(double.class)){
+                methodSet.invoke(objet, 0);
+            }
+              if(field.getType().equals(Object.class)){
+                methodSet.invoke(objet, (Object)null);
+            }
+              if(field.getType().equals(float.class)){
+                methodSet.invoke(objet, 0);
+            } 
+              
+              
+
+        }
+    
+    }
+   
+  
+    ///////////////////////////////UPLOADFILE////////////////////////////
+    
+    private FileUpload fileTraitement(Collection<Part> files, Field field) {
+        FileUpload file = new FileUpload();
+        String name = field.getName();
+        boolean exists = false;
+        String filename = null;
+        Part filepart = null;
+        for (Part part : files) {
+            if (part.getName().equals(name)) {
+                filepart = part;
+                exists = true;
+                break;
+            }
+        }
+        try (InputStream io = filepart.getInputStream()) {
+            ByteArrayOutputStream buffers = new ByteArrayOutputStream();
+            byte[] buffer = new byte[(int) filepart.getSize()];
+            int read;
+            while ((read = io.read(buffer, 0, buffer.length)) != -1) {
+                buffers.write(buffer, 0, read);
+            }
+            file.setNom(this.getFileName(filepart));
+            file.setBytes(buffers.toByteArray());
+            return file;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    private String getFileName(Part part) {
+        String contentDisposition = part.getHeader("content-disposition");
+        String[] parts = contentDisposition.split(";");
+        for (String partStr : parts) {
+            if (partStr.trim().startsWith("filename"))
+                return partStr.substring(partStr.indexOf('=') + 1).trim().replace("\"", "");
+        }
+        return null;
+    }
+   
+    public Object GetInClassInstance(String className, Class<?> classe) throws IllegalAccessException, InstantiationException, InvocationTargetException, InvocationException{
+        Object objet;
+        if(this.getHashmap().containsKey(className)){
+            Object obj = this.getHashmap().get(className);
+            if(obj == null){
+            obj = classe.newInstance();
+            objet = obj;
+            this.getHashmap().put(className, objet);
+            }else{
+                this.Reset(obj);
+                objet=obj;
+                
+            }
+        }else{
+        objet = classe.newInstance();
+        }
+        return objet;
+    }
+    
     private Object convertParamValue(String paramValue, Class<?> paramType) {
         if (paramType == String.class) {
             return paramValue;
@@ -138,7 +274,13 @@ public class FrontServlet extends HttpServlet {
             return Double.parseDouble(paramValue);
         }
         return null;
-    }   // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    }
+    public String upperFirst(String text){
+        return text.substring(0,1).toUpperCase() + text.substring(1);
+ 
+    }
+    
+// <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
      *

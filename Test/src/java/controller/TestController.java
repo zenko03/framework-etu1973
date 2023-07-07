@@ -6,15 +6,17 @@ package controller;
 import ETU1973.framework.Modelview;
 import ETU1973.framework.servlet.annotations.Route;
 import ETU1973.framework.servlet.annotations.Controller;
+import ETU1973.framework.servlet.annotations.Scope;
 import java.util.ArrayList;
 import java.util.Vector;
 
 @Controller
+@Scope(singleton=true)
 public class TestController{
     private int id;
     private String nom;
     private String prenom;
-    private int age;
+    private int age=0;
     private double mesure;
 
     public int getid() {
@@ -94,6 +96,12 @@ public class TestController{
         modelview.setView("huhu.jsp");
         return modelview;
     }
+     @Route( url = "/upload" )
+    public Modelview upload() {
+        Modelview modelview = new Modelview();
+        modelview.setView("Upload.jsp");
+        return modelview;
+    }
     
        @Route(url="/loadform")
     public Modelview load_form()
@@ -108,8 +116,9 @@ public class TestController{
         Modelview mv=new Modelview();
         mv.setView("Valider.jsp");
         ArrayList<TestController> olona=new ArrayList<TestController>();
-        TestController user=new TestController(this.getid(),this.getnom(),this.getprenom(),this.getage(),this.getmesure());
-        olona.add(user);
+       // TestController user=new TestController(this.getid(),this.getnom(),this.getprenom(),this.getage(),this.getmesure());
+       this.setage(this.getage()+1);
+       olona.add(this);
         mv.addItem("Liste_personne",olona);
         return mv;
     }
@@ -132,4 +141,5 @@ public class TestController{
         mv.addItem("Liste_personne",olona);
         return mv;
     }
+   
 }
